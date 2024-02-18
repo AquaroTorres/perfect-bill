@@ -86,3 +86,7 @@ main table td {
     border-collapse: collapse;
     border: 1px solid var(--light);
 }
+
+main table .deletecolumn {
+    width: 100px;
+}

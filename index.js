@@ -39,7 +39,7 @@ const getProducts = async () => {
     productList.innerHTML = allProducts.map(product => `
         
     <tr>
-        <td><input type="submit" id="product-submit" value="+" /></td>
+        <td class="deletecolumn"><button class="delete" onclick="deleteProduct(event, ${product.id})">D</button></td>
         <td>${product.product}</td>
         <td>
             <ul>
@@ -49,7 +49,6 @@ const getProducts = async () => {
 
         </td>
         <td>${product.price}</td>
-        <td><button class="delete" onclick="deleteProduct(event, ${product.id})">Delete</button></td>
     </tr>
     `).join("");
 };
@@ -60,11 +59,10 @@ const getFriends = async () => {
     friendList.innerHTML = allFriends.map(friend => `
         
     <tr>
-        <td><input type="submit" id="product-submit" value="+" /></td>
+        <td class="deletecolumn"><button class="delete" onclick="deleteFriend(event, ${friend.id})">D</button></td>
         <td>${friend.name}</td>
-        <td><button class="delete" onclick="deleteFriend(event, ${friend.id})">Delete</button></td>
-        </div>
-    </div>
+        <td>0+0</td>
+    </tr>
     `).join("");
 };
 
