@@ -1,46 +1,88 @@
 // Creating database structure
-const db = new Dexie('Todo App');
-db.version(1).stores({ todos: '++id, quantity, product, price' });
+const db = new Dexie('PerfectBill');
+db.version(2).stores({ products: '++id, quantity, product, price' });
+db.version(2).stores({ friends: '++id, name' });
 
-const form = document.querySelector("#form");
+const productForm = document.querySelector("#product-form");
 const quantityInput = document.querySelector("#quantity");
 const productInput = document.querySelector("#product");
 const priceInput = document.querySelector("#price");
-const list_el = document.querySelector("#tasks");
+const productList = document.querySelector("#product-list");
 
-// Add todo
-form.onsubmit = async (event) => {
-	event.preventDefault();
-	const quantity = quantityInput.value;
-	const product = productInput.value;
-	const price = priceInput.value;
-	await db.todos.add({ quantity, product, price });
-	await getTodos();
-	form.reset();
+const friendForm = document.querySelector("#friend-form");
+const nameInput = document.querySelector("#name");
+const friendList = document.querySelector("#friend-list");
+
+// Add Product
+productForm.onsubmit = async (event) => {
+    event.preventDefault();
+    const quantity = quantityInput.value;
+    const product = productInput.value;
+    const price = priceInput.value;
+    await db.products.add({ quantity, product, price });
+    await getProducts();
+    productForm.reset();
 };
 
-// Display todos
-const getTodos = async () => {
-    const allTodos = await db.todos.orderBy('id').reverse().toArray();
-    list_el.innerHTML = allTodos.map(todo => `
+// Add Friend
+friendForm.onsubmit = async (event) => {
+    event.preventDefault();
+    const name = nameInput.value;
+    await db.friends.add({ name });
+    await getFriends();
+    friendForm.reset();
+};
+
+// Display products
+const getProducts = async () => {
+    const allProducts = await db.products.orderBy('id').reverse().toArray();
+    productList.innerHTML = allProducts.map(product => `
         
-    <div class="task">
-        <div class="content">
-            <span>Quantity: ${todo.quantity}</span>
-            <span>product: ${todo.product}</span>
-            <span>Price: ${todo.price}</span>
-        </div>
-        <div class="actions">
-            <button class="delete" onclick="deleteTodo(event, ${todo.id})">Delete</button>
+    <tr>
+        <td><input type="submit" id="product-submit" value="+" /></td>
+        <td>${product.product}</td>
+        <td>
+            <ul>
+            <li>Pizza</li>
+            <li>Chicken</li>
+            </ul>
+
+        </td>
+        <td>${product.price}</td>
+        <td><button class="delete" onclick="deleteProduct(event, ${product.id})">Delete</button></td>
+    </tr>
+    `).join("");
+};
+
+// Display friends
+const getFriends = async () => {
+    const allFriends = await db.friends.orderBy('id').reverse().toArray();
+    friendList.innerHTML = allFriends.map(friend => `
+        
+    <tr>
+        <td><input type="submit" id="product-submit" value="+" /></td>
+        <td>${friend.name}</td>
+        <td><button class="delete" onclick="deleteFriend(event, ${friend.id})">Delete</button></td>
         </div>
     </div>
     `).join("");
 };
 
-window.onload = getTodos;
+// On load, load products and friends
+window.onload = function(){
+    // All code comes here 
+    getProducts();
+    getFriends();
+}
 
-// Delete todo
-const deleteTodo = async (event, id) => {
-    await db.todos.delete(id);
-    await getTodos();
+// Delete product
+const deleteProduct = async (event, id) => {
+    await db.products.delete(id);
+    await getProducts();
+};
+
+// Delete friend
+const deleteFriend = async (event, id) => {
+    await db.friends.delete(id);
+    await getFriends();
 };

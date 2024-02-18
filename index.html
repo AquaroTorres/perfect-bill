@@ -21,23 +21,54 @@
 </head>
 
 <body>
-
     <header>
         <h1>Cuenta Perfecta</h1>
-        <form id="form">
-            <input class="input" type="number" name="quantity" id="quantity" placeholder="Quantity" min="0" step="1" required  autofocus/>
-            <input class="input" type="text" name="product" id="product" placeholder="Producto" required/>
-            <input class="input" type="number" name="price" id="price" placeholder="Price" min="0" step="1" required />
-            <br>
-            <input type="submit" id="submit" value="Agregar producto" />
-        </form>
     </header>
     <main>
-        <section class="list">
-            <h2>Productos</h2>
-            <div id="tasks">
+        <form id="product-form">
+            <input class="input" 
+                type="number" 
+                name="quantity" 
+                id="quantity" 
+                value="1"
+                min="0" step="1" 
+                required autofocus/>
+            <input class="input" 
+                type="text" 
+                name="product" 
+                id="product" 
+                placeholder="Producto" 
+                required/>
+            <input class="input" 
+                type="number" 
+                name="price" 
+                id="price" 
+                placeholder="Price" 
+                min="0" step="1" 
+                required />
+            <input type="submit" id="product-submit" value="+" />
+        </form>
 
-            </div>
+        <section class="list">
+            <table id="product-list">
+
+            </table>
+        </section>
+
+        <form id="friend-form">
+            <input class="input" 
+                type="text" 
+                name="name" 
+                id="name" 
+                placeholder="Nombre" 
+                required/>
+            <input type="submit" id="friend-submit" value="+" />
+        </form>
+
+        <section class="list">
+            <table id="friend-list">
+
+            </table>
         </section>
     </main>
 
