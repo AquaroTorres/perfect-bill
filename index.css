@@ -23,7 +23,7 @@ body {
 }
 
 header {
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
@@ -52,7 +52,7 @@ main input {
 }
 
 #product {
-    width: 50%;
+    width: 54%;
 }
 
 #price {
@@ -60,25 +60,14 @@ main input {
 }
 
 #name {
-    width: 87%;
+    width: 90%;
 }
 
 main {
-    padding: 0rem 1rem;
+    padding: 0.5rem;
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
-}
-
-.list {
-    padding: 1rem;
-}
-
-.list h2 {
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: var(--light);
-    margin-bottom: 1rem;
 }
 
 main table td {
