@@ -1,84 +1,342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cuenta Perfecta</title>
+        <link rel="stylesheet" href="index.css" />
+        <link rel="manifest" href="./manifest.json" />
+        <script>
+            // Check that service workers are supported
+            if ('serviceWorker' in navigator) {
+                // Use the window load event to keep the page load performant
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js');
+                });
+            }
+        </script>
+        <style media="screen">
+            body {
+                background-color: #126BBF;
+                color: #ffffff; font-family: 'Raleway',sans-serif;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuenta Perfecta</title>
-    <link rel="stylesheet" href="index.css" />
-    <link rel="manifest" href="./manifest.json" />
-    <script>
-        // Check that service workers are supported
-        if ('serviceWorker' in navigator) {
-            // Use the window load event to keep the page load performant
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
-            });
-        }
-    </script>
-    <script src="./dexie.min.js"></script>
-</head>
+            h2 {
+                color: #ffffff; font-family: 'Raleway',sans-serif;
+                font-size: 28px; font-weight: 800; line-height: 72px; margin: 0 0 24px; text-align: center; text-transform: uppercase;
+                padding: 0px;
+                margin: 0px;
+                text-shadow: 2px 2px black;
+            }
+            #peoples {
+                border: 1px solid #ccc;
+            }
+            .people {
+                display: inline-block;
+                width:40px;
+                height:40px;
+                border: 1px solid grey;
+            }
+            .input {
+                height: 35px;
+                font-size: 16px;
+            }
+            input[type='checkbox'] {
+                width:20px;
+                height:20px;
+            }
+            input[type=text] {
+                border: none;
+                border-bottom: 2px solid;
+            }
+            input[type=number] {
+                border: none;
+                border-bottom: 2px solid;
+            }
+            button {
+                border: none;
+                border-bottom: 2px solid;
+                width: 40px; height: 39px;
+                background-color: white;
+            }
+            #input_ct {
+                width: 35px;
+            }
+            #input_product {
+                padding-left: 4px;
+            }
+            #input_valor {
+                width: 60px;
+                padding-right: 4px;
+            }
+            #input_person {
+                padding-left: 4px;
+            }
 
-<body>
-    <header>
-        <h1>Cuenta Perfecta</h1>
-    </header>
-    <main>
-        <form id="product-form">
-            <input class="input" 
-                type="number" 
-                name="quantity" 
-                id="quantity" 
-                value="1"
-                min="0" step="1" 
-                required/>
-            <input class="input" 
-                type="text" 
-                name="product" 
-                id="product" 
-                placeholder="Producto" 
-                required
-                autofocus/>
-            <input class="input" 
-                type="number" 
-                name="price" 
-                id="price" 
-                placeholder="Price" 
-                min="0" step="1" 
-                required />
-            <input type="submit" id="product-submit" value="+" />
-        </form>
+            .text-right {
+                text-align: right;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .text-left {
+                text-align: left;
+            }
+            .nombre {
+                font-style: italic;
+                color: grey;
+            }
+            .table {
+                 width:100%;
+                 border-collapse: collapse;
+            }
+        </style>
 
-        <section class="list">
-            <table id="product-list">
+    </head>
+    <body>
+        <div id="app">
 
-            </table>
-            <div style="text-align: end;">
-                Sub Total: <br>
-                10%: <br>
-                Total: <br>
-            </div>
-        </section>
+        <center><h2>Cuenta Perfecta</h2></center>
 
-        <form id="friend-form">
-            <input class="input" 
-                type="text" 
-                name="name" 
-                id="name" 
-                placeholder="Nombre" 
-                required/>
-            <input type="submit" id="friend-submit" value="+" />
-        </form>
+        <table style="margin:auto; margin-right: 0px;">
+            <tr>
+                <td>
+                    <input class="input text-center" id="input_ct" type="number"
+                        v-model="product_qt" placeholder="Ct"
+                        onKeyUp="if(this.value>19){this.value='19';}else if(this.value<0){this.value='0';}"
+                        v-on:keyup.13="setFocusProduct" ref="qty">
+                </td>
+                <td>
+                    <input class="input" id="input_product" type="text"
+                        v-model="product_name" placeholder="Producto" size="16"
+                        maxlength="16" ref="product_name"
+                        v-on:keyup.13="setFocusValue">
+                </td>
+                <td><input class="input text-right" id="input_valor" ref="product_value"
+                    type="number" v-model="product_value" placeholder="$" min="0" max="999999"
+                    v-on:keyup.13="addProduct(product_qt,product_name,product_value)"></td>
+                <td>
+                    <button type="button" class="button" name="button"
+                        v-on:click="addProduct(product_qt,product_name,product_value)"
+                        ref="addProduct">
+                        <img src="assets/icons/add.png" width="28" alt="">
+                    </button>
+                </td>
+            </tr>
+        </table>
 
-        <section class="list">
-            <table id="friend-list">
+        <br>
 
-            </table>
-        </section>
-    </main>
+        <table class="table">
+            <tbody>
+                <tr v-for="product in products" style="border: 1px solid #DFDFDF;">
+                    <td>
+                        <button type="button" class="button" @click="deleteProduct(product.id)">
+                            <img src="assets/icons/delete.png" width="28" alt="">
+                        </button>
+                    </td>
+                    <td>{{ product.name }}</td>
+                    <td>
+                        <li v-for="(person,index) in persons">
+                            <input type="checkbox" :id="person" @change="handleChange()"
+                             v-model="persons[index].products" :value="product.id">
+                             {{ person.name }}
+                        </li>
+                    </td>
+                    <td class="text-right"> {{ parseInt(product.value).toLocaleString() }}</td>
+                </tr>
 
-    <script src="index.js"></script>
-</body>
+                <tfooter>
+                    <tr>
+                        <th colspan="3" class="text-right">Sub Total:</th>
+                        <th class="text-right">{{subtotal.toLocaleString()}}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3" class="text-right">10%: </th>
+                        <th class="text-right">{{propina.toLocaleString()}}</th>
+                    </tr>
+                    <tr><th colspan="3" class="text-right">Total: </th>
+                        <th class="text-right">{{total.toLocaleString()}}</th>
+                    </tr>
+                </tfooter>
+            </tbody>
+        </table>
 
+        <hr>
+
+        <table style="margin:auto; margin-right: 0px;">
+            <tr>
+                <td><input class="input" type="text" size="16" maxlength="16"
+                    ref="person_name" placeholder="Nombre" id="input_person"
+                    v-model="person_name" v-on:keyup.13="addPerson(person_name)"></td>
+                <td>
+                    <button class="button" class="text-center" v-on:click="addPerson(person_name)"
+                        ref="addPerson">
+                        <img src="assets/icons/add_person.png" width="30" alt="">
+                    </button>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+
+        <table class="table">
+            <tr v-for="person in persons"  style="border: 1px solid #DFDFDF;">
+                <td>
+                    <button type="button" class="button" @click="deletePerson(person.id)">
+                        <img src="assets/icons/delete.png" width="28" alt="">
+                    </button>
+                </td>
+                <td>
+                    {{ person.name }}
+                </td>
+                <td class="text-right">
+                    <table style="margin: auto; margin-right: 0px;">
+                        <tr v-for="product in person.products">
+                            <td class="text-left">
+                                {{ products.find(p => p.id === product).name }}
+                            </td>
+                            <td class="text-right">
+                                {{ Math.ceil(products.find(p => p.id === product).value / products.find(p => p.id === product).division).toLocaleString() }}
+                            </td>
+                        </tr>
+                    </table>
+                    <strong class="text-right" style="margin: 3px;">
+                    {{ person.subtotal.toLocaleString() }} +
+                                       {{ Math.floor(person.subtotal * 0.1).toLocaleString() }} =
+                                       {{ Math.floor(person.subtotal + person.subtotal * 0.1).toLocaleString() }}
+                    </strong>
+
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <center>
+            <img src="assets/icons/aquaro.png" alt="Aquaro" width="120">
+        </center>
+        </div>
+        <script src="assets/js/vue.min.js"></script>
+        <script type="text/javascript">
+        var app = new Vue({
+            el: "#app",
+            data: {
+                products: [
+                  // { id: 0, name: "Pizza", value: 9000, division: 0 },
+                  // { id: 1, name: "Pitcher", value: 6000, division: 0 },
+                  // { id: 2, name: "Mojito", value: 2000, division: 0 }
+                ],
+                persons: [
+                  // { id: 0, name: "Alvaro", products: [0,1], subtotal: 0 },
+                  // { id: 1, name: "Carolina", products: [0,2], subtotal: 0 },
+                  // { id: 2, name: "Jorge", products: [0,1], subtotal: 0 }
+                ],
+                subtotal: 0,
+                propina: 0,
+                total: 0,
+                person_name: "",
+                product_qt: 1,
+                product_name: "",
+                product_value: null,
+            },
+            methods: {
+                calcDivision: function() {
+                    for (i = 0; i < this.products.length; i++) {
+                        this.products[i].division = 0;
+                    }
+                    for (i = 0; i < this.persons.length; i++) {
+                        for (j = 0; j < this.persons[i].products.length; j++) {
+                            const p = this.products.find(product => product.id === this.persons[i].products[j]);
+                            p.division += 1;
+                        }
+                    }
+                },
+                recalcularTotales: function() {
+                    for (i = 0; i < this.persons.length; i++) {
+                        this.persons[i].subtotal = 0;
+                        for (j = 0; j < this.persons[i].products.length; j++) {
+                            const p = this.products.find(product => product.id === this.persons[i].products[j]);
+                            this.persons[i].subtotal += Math.ceil(p.value / p.division);
+                        }
+                    }
+                },
+                sumProducts: function() {
+                    this.subtotal = 0;
+                    for (i = 0; i < this.products.length; i++) {
+                        this.subtotal = parseInt(this.subtotal) + parseInt(this.products[i].value);
+                    }
+                    this.propina = Math.floor(this.subtotal * 0.1);
+                    this.total   = this.propina + this.subtotal;
+                },
+                addPerson: function(person_name) {
+                    if(this.person_name) {
+                        if(this.persons.length > 0)
+                            var key = this.persons[this.persons.length - 1].id + 1;
+                        else
+                            var key = 0;
+                        this.persons.push({ id: key, name: person_name, products: [], subtotal: 0 });
+                        this.person_name = '';
+                        this.$refs.person_name.focus();
+                    }
+                },
+                deletePerson: function(id) {
+                    this.persons = this.persons.filter(person => person.id !== id);
+                    this.calcDivision();
+                    this.recalcularTotales();
+                },
+                addProduct: function(product_qt, product_name, product_value) {
+                    if(this.product_qt && this.product_name && this.product_value) {
+                        for (i = 0; i < this.product_qt ; i++) {
+                            var valorUnitario = parseInt(this.product_value) / parseInt(this.product_qt);
+                            //this.products.push({'product': this.product, 'valor': valorUnitario})
+                            if(this.products.length > 0)
+                                var key = this.products[this.products.length - 1].id + 1;
+                            else
+                                var key = 0;
+                            this.products.push({
+                                id: key,
+                                name: product_name,
+                                value: valorUnitario,
+                                division: 0
+                            });
+                        }
+                        this.sumProducts();
+                        this.product_qt = 1;
+                        this.product_value = null;
+                        this.product_name = '';
+                        this.$refs.product_name.focus();
+                    }
+                },
+                deleteProduct: function(id) {
+                    this.products = this.products.filter(product => product.id !== id);
+                    // eliminar el producto en el array de personas
+                    for (i = 0; i < this.persons.length; i++) {
+                        this.persons[i].products = this.persons[i].products.filter(product => product !== id);
+                    }
+                    this.sumProducts();
+                    this.recalcularTotales();
+                },
+                handleChange: function() {
+                    this.calcDivision();
+                    this.recalcularTotales();
+                },
+                setFocusProduct: function() {
+                    this.$refs.product_name.focus();
+                },
+                setFocusValue: function() {
+                    this.$refs.product_value.focus();
+                },
+                setFocusAddProduct: function() {
+                    this.$refs.addProduct.focus();
+                },
+            },
+            created: function() {
+                this.calcDivision();
+                this.sumProducts();
+                this.recalcularTotales();
+            }
+        });
+        </script>
+    </body>
 </html>

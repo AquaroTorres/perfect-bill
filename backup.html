@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Perfecta</title>
+    <link rel="stylesheet" href="index.css" />
+    <link rel="manifest" href="./manifest.json" />
+    <script>
+        // Check that service workers are supported
+        if ('serviceWorker' in navigator) {
+            // Use the window load event to keep the page load performant
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+    <script src="./dexie.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Cuenta Perfecta</h1>
+    </header>
+    <main>
+        <form id="product-form">
+            <input class="input" 
+                type="number" 
+                name="quantity" 
+                id="quantity" 
+                value="1"
+                min="0" step="1" 
+                required/>
+            <input class="input" 
+                type="text" 
+                name="product" 
+                id="product" 
+                placeholder="Producto" 
+                required
+                autofocus/>
+            <input class="input" 
+                type="number" 
+                name="price" 
+                id="price" 
+                placeholder="Price" 
+                min="0" step="1" 
+                required />
+            <input type="submit" id="product-submit" value="+" />
+        </form>
+
+        <section class="list">
+            <table id="product-list">
+
+            </table>
+            <div style="text-align: end;">
+                Sub Total: <br>
+                10%: <br>
+                Total: <br>
+            </div>
+        </section>
+
+        <form id="friend-form">
+            <input class="input" 
+                type="text" 
+                name="name" 
+                id="name" 
+                placeholder="Nombre" 
+                required/>
+            <input type="submit" id="friend-submit" value="+" />
+        </form>
+
+        <section class="list">
+            <table id="friend-list">
+
+            </table>
+        </section>
+    </main>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
